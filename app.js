@@ -14,7 +14,7 @@ let toastTimer;
 let nearbyOrigin=null;
 let selectedBusinessPoint=null;
 const INDIA_STATES=["Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"];
-const stateOptions=(id)=>`<select id="${"${id}"}"><option value="">Select state / UT</option>${"${INDIA_STATES.map(s=>`<option>${"${s}"}</option>`).join("")}"}</select>`;
+function stateOptions(id){return '<select id="'+id+'"><option value="">Select state / UT</option>'+INDIA_STATES.map(s=>'<option>'+s+'</option>').join('')+'</select>'}
 function distanceKm(a,b){const rad=n=>n*Math.PI/180,dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon),x=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
 function requestGPS(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error("Location is not supported by this browser."));navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),()=>reject(new Error("Location permission was denied. You can search by state or city instead.")),{enableHighAccuracy:true,timeout:12000,maximumAge:60000})})}
 async function uploadBusinessImage(file){if(!file)return null;if(!/^image\\/(jpeg|png|webp)$/.test(file.type))throw new Error("Choose a JPG, PNG or WebP image.");if(file.size>5*1024*1024)throw new Error("Image must be smaller than 5 MB.");const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";const path=`${"${currentUser.id}"}/${"${crypto.randomUUID()}"}.${"${ext}"}`;const {error}=await supabase.storage.from("abn-business-images").upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;return supabase.storage.from("abn-business-images").getPublicUrl(path).data.publicUrl}
@@ -247,7 +247,7 @@ function wireUI(){
  $("#aboutLink").onclick=e=>{e.preventDefault();showModal("About ABN",`<p class="form-help"><strong>Ambedkarite Business Network (ABN)</strong> is planned as an initiative of Bahujan Samaj Vikas Sansthan to help businesses, buyers, suppliers, and service professionals discover one another and create economic opportunities.</p><p class="form-help">Initial interface languages: English, Hindi, and Marathi. The app is designed for responsive web use and can be installed as a PWA on supported devices.</p><button class="button button-primary" id="aboutClose">Close</button>`);$("#aboutClose").onclick=closeModal};
 }
 async function init(){
- wireUI();applyLanguage();await refreshProfile();await loadListings();
+ wireUI();applyLanguage();$("#nearbyButton").onclick=enableNearby;await refreshProfile();await loadListings();
  supabase.auth.onAuthStateChange((_event,session)=>{
    // Avoid awaited Supabase calls inside this callback; it runs while Auth may hold its internal lock.
    currentUser=session?.user||null;
