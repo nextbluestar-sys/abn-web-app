@@ -182,8 +182,8 @@ async function addListingForm(){
  </div><div class="form-actions"><button class="button button-primary" type="submit">Publish listing</button><button class="button button-outline" type="button" id="cancelListing">Cancel</button></div></form>`);
  $("#cancelListing").onclick=closeModal;
  $("#listingForm").onsubmit=async e=>{e.preventDefault();const btn=$('button[type=submit]',e.currentTarget);btn.disabled=true;btn.textContent="Saving…";
- const payload={business_id:$("#listingBusiness").value,created_by:currentUser.id,listing_type:$("#listingType").value,title:$("#listingTitle").value.trim(),category:$("#listingCategory").value.trim(),description:$("#listingDescription").value.trim(),price:$("#listingPrice").value===""?null:Number($("#listingPrice").value),unit:$("#listingUnit").value.trim()||null,city:$("#listingCity").value.trim()||null,state:$("#listingState").value.trim()||null,status:"draft"};
- try{const {error}=await supabase.from("abn_listings").insert(payload);if(error)throw error;closeModal();toast("Listing published to the marketplace.");await loadListings()}catch(err){toast(err.message||"Could not save listing.");btn.disabled=false;btn.textContent="Save draft"}
+ const payload={business_id:$("#listingBusiness").value,created_by:currentUser.id,listing_type:$("#listingType").value,title:$("#listingTitle").value.trim(),category:$("#listingCategory").value.trim(),description:$("#listingDescription").value.trim(),price:$("#listingPrice").value===""?null:Number($("#listingPrice").value),unit:$("#listingUnit").value.trim()||null,city:$("#listingCity").value.trim()||null,state:$("#listingState").value.trim()||null,status:"published"};
+ try{const {error}=await supabase.from("abn_listings").insert(payload);if(error)throw error;closeModal();toast("Listing published to the marketplace.");await loadListings()}catch(err){toast(err.message||"Could not save listing.");btn.disabled=false;btn.textContent="Publish listing"}
  };
 }
 function startEnquiry(listingId){
