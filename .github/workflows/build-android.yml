@@ -1,0 +1,68 @@
+name: Build ABN Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'styles.css'
+      - 'config.js'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - 'package.json'
+      - 'capacitor.config.json'
+      - '.github/workflows/build-android.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Prepare local web bundle
+        run: |
+          mkdir -p www
+          cp index.html app.js styles.css config.js www/
+          [ ! -f manifest.webmanifest ] || cp manifest.webmanifest www/
+          [ ! -f sw.js ] || cp sw.js www/
+          [ ! -d assets ] || cp -r assets www/assets
+          [ ! -d icons ] || cp -r icons www/icons
+          # Android uses bundled files; avoid registering the website's service worker in the WebView.
+          sed -i 's/if ("serviceWorker" in navigator/if (false \&\& "serviceWorker" in navigator/' www/app.js
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build debug APK
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ABN-Android-debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
