@@ -1,0 +1,15 @@
+{
+  "appId": "org.bsvs.abn",
+  "appName": "ABN Business Network",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#153b2d",
+      "showSpinner": false
+    }
+  }
+}
