@@ -1,0 +1,16 @@
+{
+  "name": "abn-mobile-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ABN Android app wrapper for the existing Supabase-powered web application",
+  "scripts": {
+    "build:android": "npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
