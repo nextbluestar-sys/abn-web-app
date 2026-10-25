@@ -1,0 +1,17 @@
+{
+  "name": "Ambedkarite Business Network",
+  "short_name": "ABN",
+  "description": "Discover businesses, suppliers and services across India.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#153b2d",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23153b2d'/%3E%3Ctext x='50' y='64' font-size='42' font-family='Arial' text-anchor='middle' fill='white' font-weight='700'%3EABN%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

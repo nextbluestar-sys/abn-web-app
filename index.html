@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153b2d">
+  <meta name="description" content="Ambedkarite Business Network — connect businesses, buyers and service providers across India.">
+  <title>ABN — Ambedkarite Business Network</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23153b2d'/%3E%3Ctext x='50' y='64' font-size='42' font-family='Arial' text-anchor='middle' fill='white' font-weight='700'%3EABN%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="ABN home">
+        <span class="brand-mark">ABN</span>
+        <span><strong>Ambedkarite</strong><small>Business Network</small></span>
+      </a>
+      <div class="org-tag"><span class="dot"></span> BSVS Initiative</div>
+      <nav class="nav-list" aria-label="Main navigation">
+        <button class="nav-item active" data-view="discover"><span class="nav-icon">⌂</span><span data-i18n="discover">Discover</span></button>
+        <button class="nav-item" data-view="business"><span class="nav-icon">▦</span><span data-i18n="businesses">Businesses</span></button>
+        <button class="nav-item" data-view="services"><span class="nav-icon">✳</span><span data-i18n="services">Services</span></button>
+        <button class="nav-item" data-view="enquiries"><span class="nav-icon">↗</span><span data-i18n="enquiries">My enquiries</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><span class="help-icon">✦</span><strong>Grow together.</strong><p>Build trusted connections and support local enterprise.</p></div>
+        <button class="nav-item" id="accountNav"><span class="nav-icon">◎</span><span data-i18n="account">Account</span></button>
+        <div class="sidebar-footer">© 2026 BSVS · ABN</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-button menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+        <div class="breadcrumb"><span>ABN</span><span class="crumb-slash">/</span><strong id="pageTitle">Discover</strong></div>
+        <div class="top-actions">
+          <label class="language-select"><span class="language-symbol">文</span>
+            <select id="languageSelect" aria-label="Choose language">
+              <option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option>
+            </select>
+          </label>
+          <button class="button button-quiet" id="loginButton">Sign in</button>
+          <button class="avatar-button" id="avatarButton" title="Account">?</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="welcome-row">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="network">YOUR NETWORK. YOUR GROWTH.</span></div>
+            <h1 id="welcomeTitle">Business grows <span>together.</span></h1>
+            <p class="lead" data-i18n="heroLead">Discover suppliers, shop from businesses, and find trusted professionals across India.</p>
+          </div>
+          <button class="button button-primary" id="addBusinessButton"><span>＋</span> <span data-i18n="addBusiness">List your business</span></button>
+        </div>
+
+        <section class="hero-panel">
+          <div class="hero-copy">
+            <span class="hero-pill"><span class="pulse"></span> PAN-INDIA BUSINESS COMMUNITY</span>
+            <h2>One network.<br><em>More opportunity.</em></h2>
+            <p>Find the right supplier, reach new customers, and turn your skills into opportunities.</p>
+            <button class="button button-light" id="exploreButton">Explore the network <span>↗</span></button>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="hero-center"><span>ABN</span><small>CONNECT · GROW · THRIVE</small></div>
+            <div class="orbit-node node-a">B2B</div><div class="orbit-node node-b">B2C</div><div class="orbit-node node-c">✳</div>
+            <div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">✧</div>
+          </div>
+        </section>
+
+        <section class="stats-grid" aria-label="Marketplace overview">
+          <article class="stat-card"><div class="stat-top"><span class="stat-icon green">▦</span><span class="stat-caption">MARKETPLACE</span></div><strong id="statListings">—</strong><span class="stat-label">Active listings</span><div class="stat-foot"><span class="mini-dot"></span> Products & services</div></article>
+          <article class="stat-card"><div class="stat-top"><span class="stat-icon gold">⌂</span><span class="stat-caption">DISCOVER</span></div><strong id="statBusinesses">—</strong><span class="stat-label">Verified businesses</span><div class="stat-foot"><span class="mini-dot gold-dot"></span> Trusted profiles</div></article>
+          <article class="stat-card"><div class="stat-top"><span class="stat-icon blue">✳</span><span class="stat-caption">OPPORTUNITY</span></div><strong id="statServices">—</strong><span class="stat-label">Service offerings</span><div class="stat-foot"><span class="mini-dot blue-dot"></span> Skills in action</div></article>
+          <article class="stat-card stat-cta"><div class="stat-top"><span class="stat-icon cream">↗</span><span class="stat-caption">YOUR NEXT STEP</span></div><strong>Start here.</strong><span class="stat-label">Introduce your business</span><button id="statCta" class="text-link">Create a listing <span>→</span></button></article>
+        </section>
+
+        <section class="market-section">
+          <div class="section-heading">
+            <div><div class="eyebrow"><span class="eyebrow-line"></span>THE MARKETPLACE</div><h2 id="listingHeading">Explore opportunities</h2><p>Browse products, bulk suppliers, and professional services.</p></div>
+            <button class="button button-outline" id="viewAllButton">View all <span>→</span></button>
+          </div>
+          <div class="market-controls">
+            <div class="filter-tabs" role="tablist" aria-label="Listing type">
+              <button class="filter-tab active" data-filter="all">All listings</button>
+              <button class="filter-tab" data-filter="product">Products / B2C</button>
+              <button class="filter-tab" data-filter="service">Services</button>
+              <button class="filter-tab" data-filter="b2b">B2B / Wholesale</button>
+            </div>
+            <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search products, services, businesses…"><kbd>↵</kbd></label>
+          </div>
+          <div class="results-meta"><span id="resultsLabel">Loading marketplace…</span><button class="clear-search" id="clearSearch">Clear filters</button></div>
+          <div class="listing-grid" id="listingGrid">
+            <div class="loading-card"><span class="spinner"></span> Loading marketplace listings…</div>
+          </div>
+          <div class="empty-state hidden" id="emptyState"><div class="empty-icon">⌕</div><h3>No listings found yet</h3><p>Try a different search, or be the first to add a business listing.</p><button class="button button-primary" id="emptyAddBusiness">List your business</button></div>
+        </section>
+
+        <section class="bottom-banner">
+          <div class="banner-icon">✦</div><div><h3>Your skills deserve to be seen.</h3><p>Join the network and connect with customers, partners, and suppliers.</p></div><button class="button button-light" id="bannerJoin">Join ABN <span>→</span></button>
+        </section>
+        <footer class="page-footer"><span>Ambedkarite Business Network · An initiative of Bahujan Samaj Vikas Sansthan</span><span><a href="#" id="privacyLink">Privacy-first by design</a> · <a href="#" id="aboutLink">About ABN</a></span></footer>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header"><div><span class="modal-kicker">ABN · BSVS INITIATIVE</span><h2 id="modalTitle">Welcome to ABN</h2></div><button class="icon-button" id="closeModal" aria-label="Close dialog">×</button></div>
+      <div id="modalContent"></div>
+    </section>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
