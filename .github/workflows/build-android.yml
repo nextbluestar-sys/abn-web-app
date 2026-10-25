@@ -12,6 +12,7 @@ on:
       - 'marketplace-plus.css'
       - 'app-branding.js'
       - 'app-branding.css'
+      - 'verification.js'
       - 'config.js'
       - 'manifest.webmanifest'
       - 'sw.js'
@@ -43,7 +44,7 @@ jobs:
       - name: Prepare local web bundle
         run: |
           mkdir -p www
-          cp index.html app.js styles.css config.js www/
+          cp index.html app.js styles.css config.js verification.js www/
           cp marketplace-plus.js marketplace-plus.css app-branding.js app-branding.css www/
           [ ! -f manifest.webmanifest ] || cp manifest.webmanifest www/
           [ ! -f sw.js ] || cp sw.js www/
