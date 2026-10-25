@@ -110,6 +110,22 @@ function authForm(mode="signin"){
     </form>
     <div class="modal-switch">${signup?"Already have an account?":"New to ABN?"} <button type="button" id="switchAuth">${signup?"Sign in":"Create an account"}</button></div>`);
   $("#cancelAuth").onclick=closeModal;$("#switchAuth").onclick=()=>authForm(signup?"signin":"signup");
+  const googleButton=document.createElement("button");
+  googleButton.type="button";
+  googleButton.className="button button-outline";
+  googleButton.style.width="100%";
+  googleButton.style.marginTop="12px";
+  googleButton.innerHTML='<span aria-hidden="true" style="font-weight:700;margin-right:8px">G</span> Continue with Google';
+  $("#authForm").insertAdjacentElement("afterend",googleButton);
+  googleButton.addEventListener("click",async()=>{
+    googleButton.disabled=true;
+    googleButton.textContent="Connecting to Google…";
+    const {error}=await supabase.auth.signInWithOAuth({
+      provider:"google",
+      options:{redirectTo:"https://nextbluestar-sys.github.io/abn-web-app/"}
+    });
+    if(error){toast(error.message||"Google sign-in could not start.");googleButton.disabled=false;googleButton.textContent="Continue with Google";}
+  });
   $("#authForm").onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.currentTarget);const email=String(f.get("email")).trim();const password=String(f.get("password"));
     const submit=$("button[type=submit]",e.currentTarget);submit.disabled=true;submit.textContent=signup?"Creating…":"Signing in…";
