@@ -10,6 +10,8 @@ on:
       - 'styles.css'
       - 'marketplace-plus.js'
       - 'marketplace-plus.css'
+      - 'app-branding.js'
+      - 'app-branding.css'
       - 'config.js'
       - 'manifest.webmanifest'
       - 'sw.js'
@@ -42,7 +44,7 @@ jobs:
         run: |
           mkdir -p www
           cp index.html app.js styles.css config.js www/
-          cp marketplace-plus.js marketplace-plus.css www/
+          cp marketplace-plus.js marketplace-plus.css app-branding.js app-branding.css www/
           [ ! -f manifest.webmanifest ] || cp manifest.webmanifest www/
           [ ! -f sw.js ] || cp sw.js www/
           [ ! -d assets ] || cp -r assets www/assets
