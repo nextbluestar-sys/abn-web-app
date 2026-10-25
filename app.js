@@ -67,7 +67,7 @@ function listingCard(item,index){
   const city=[business.city||item.city,business.state||item.state].filter(Boolean).join(", ");
   const price=item.price==null?"Ask for quote":money(item.price)+(item.unit?` <small>/ ${escapeHtml(item.unit)}</small>`:"");
   return `<article class="listing-card">
-    <div class="listing-visual ${tone}">${business.cover_image_url?`<img class="listing-cover" src="${"${escapeHtml(business.cover_image_url)}"}" alt="${"${escapeHtml(business.name||"Business")}"} image" loading="lazy">`:""}<span class="listing-type">${service?"SERVICE":(wholesale?"B2B · WHOLESALE":"PRODUCT · B2C")}</span><span class="verified-pill">ABN listing</span><div class="visual-symbol">${symbol}</div></div>
+    <div class="listing-visual ${tone}">${business.cover_image_url?`<img class="listing-cover" src="${escapeHtml(business.cover_image_url)}" alt="${escapeHtml(business.name||"Business")} image" loading="lazy">`:""}<span class="listing-type">${service?"SERVICE":(wholesale?"B2B · WHOLESALE":"PRODUCT · B2C")}</span><span class="verified-pill">ABN listing</span><div class="visual-symbol">${symbol}</div></div>
     <div class="listing-body"><div class="listing-meta"><span class="listing-category">${escapeHtml(item.category||"General")}</span><span>${escapeHtml(city||"India")}</span></div>
     <h3>${escapeHtml(item.title)}</h3><p class="listing-desc">${escapeHtml(item.description||"Connect with this business for details, availability, and quotations.")}</p>
     <div class="listing-business"><span class="business-avatar">${escapeHtml((business.name||"A").slice(0,1).toUpperCase())}</span><span>${escapeHtml(business.name||"ABN business")}</span><span>✓</span></div>
@@ -166,7 +166,7 @@ function addBusinessForm(){
   <div class="field full"><label for="bizCover">Business / shop photo</label><input id="bizCover" type="file" accept="image/jpeg,image/png,image/webp"><small class="form-help">JPG, PNG or WebP · maximum 5 MB</small><img id="bizImagePreview" class="image-preview hidden" alt="Business photo preview"></div>
   <div class="field full"><label for="bizAddress">Street / full address</label><input id="bizAddress" maxlength="240" placeholder="Shop, building, street, landmark"></div>
   <div class="field"><label for="bizState">State / Union Territory</label>${stateOptions("bizState")}</div>
-  <div class="field"><label for="bizCity">City / District / Town</label><input id="bizCity" maxlength="100" placeholder="City or district"></div>
+  <div class="field"><label for="bizCity">City / District / Town</label><input id="bizCity" list="indiaCityOptions" maxlength="100" placeholder="Select or type city / district"><datalist id="indiaCityOptions"></datalist></div>
   <div class="field"><label for="bizPincode">PIN code</label><input id="bizPincode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit PIN"></div>
   <div class="field full"><label>Pin your business location</label><div class="map-toolbar"><button type="button" class="button button-outline" id="bizUseGPS">◎ Use current GPS</button><span id="bizMapStatus" class="form-help">Tap the map to set your location, or drag the pin.</span></div><div id="bizMap" class="business-location-map"></div></div>
  <div class="field full"><label for="bizDescription">About your business</label><textarea id="bizDescription" maxlength="3000" placeholder="What do you offer? Who do you serve?"></textarea></div>
@@ -174,6 +174,7 @@ function addBusinessForm(){
   selectedBusinessPoint=null;
   $("#bizCover").onchange=()=>{const file=$("#bizCover").files[0],preview=$("#bizImagePreview");if(file){preview.src=URL.createObjectURL(file);preview.classList.remove("hidden")}else preview.classList.add("hidden")};
   setupBusinessMap();
+  $("#bizState").addEventListener("change",async()=>{const state=$("#bizState").value,dl=$("#indiaCityOptions");dl.innerHTML="";if(!state)return;try{const response=await fetch("https://countriesnow.space/api/v0.1/countries/state/cities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({country:"India",state})});const result=await response.json();if(result.data)dl.innerHTML=result.data.map(city=>`<option value="${escapeHtml(city)}"></option>`).join("")}catch(e){console.warn("City list unavailable; manual entry remains available.")}});
  $("#cancelBiz").onclick=closeModal;
  $("#businessForm").onsubmit=async e=>{e.preventDefault();const btn=$('button[type=submit]',e.currentTarget);btn.disabled=true;btn.textContent="Submitting…";
   const name=$("#bizName").value.trim();
