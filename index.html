@@ -8,7 +8,7 @@
   <title>ABN — Ambedkarite Business Network</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23153b2d'/%3E%3Ctext x='50' y='64' font-size='42' font-family='Arial' text-anchor='middle' fill='white' font-weight='700'%3EABN%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./styles.css?v=20261025-8">
+  <link rel="stylesheet" href="./styles.css?v=20261025-9">
 </head>
 <body>
   <div class="app-shell">
@@ -47,6 +47,14 @@
       </header>
 
       <section class="content">
+        <section class="public-site" aria-label="ABN public website">
+          <header class="public-nav"><a class="public-brand" href="#siteHome"><span class="public-brand-mark">ABN</span><span><strong>Ambedkarite Business Network</strong><small>An initiative of BSVS</small></span></a><nav aria-label="Website navigation"><a href="#siteAbout">About us</a><a href="#siteWork">What we do</a><a href="#marketplace">Marketplace</a><a href="#abnPortals">Portals</a></nav><button class="button button-primary public-nav-join" type="button" data-public-action="join">Join the network ↗</button></header>
+          <section class="public-hero" id="siteHome"><div class="public-hero-copy"><span class="public-eyebrow"><i></i> COMMUNITY · ENTERPRISE · OPPORTUNITY</span><h1>When our businesses grow, <em>our community grows.</em></h1><p>Discover local entrepreneurs, connect with trusted service providers, and build stronger business relationships across India.</p><div class="public-hero-actions"><button class="button public-button-light" type="button" data-public-action="explore">Explore businesses ↘</button><button class="button public-button-glass" type="button" data-public-action="join">Become a member ↗</button></div><div class="public-trust-row"><span class="public-avatar-stack"><i>AB</i><i>IN</i><i>∞</i></span><span><strong>One connected network</strong><small>Supporting enterprise and shared progress</small></span></div></div><div class="public-hero-visual" aria-label="Decorative ABN community graphic"><div class="visual-orbit orbit-a"></div><div class="visual-orbit orbit-b"></div><div class="visual-sun"></div><div class="visual-card visual-card-top"><span>✳</span><div><strong>Skills into opportunity</strong><small>Discover · Connect · Grow</small></div></div><div class="visual-center"><span class="visual-center-mark">ABN</span><strong>Stronger<br>together.</strong><small>BUSINESS · PEOPLE · POSSIBILITY</small></div><div class="visual-card visual-card-bottom"><span>↗</span><div><strong>Local roots. Wider reach.</strong><small>Connecting businesses across India</small></div></div><div class="visual-star star-one">✦</div><div class="visual-star star-two">✧</div></div></section>
+          <div class="public-ribbon"><span>BUILD CONNECTIONS</span><b>✳</b><span>SUPPORT ENTERPRISE</span><b>✳</b><span>GROW TOGETHER</span><b>✳</b><span>CREATE OPPORTUNITY</span></div>
+          <section class="public-about" id="siteAbout"><div class="public-section-label">WHO WE ARE <span>01 / ABOUT ABN</span></div><div class="public-about-grid"><h2>A network built on <em>collective progress.</em></h2><div><p>Ambedkarite Business Network (ABN) is a community-focused initiative of Bahujan Samaj Vikas Sansthan (BSVS), designed to help businesses, customers, and service providers find one another and thrive.</p><p>We believe visibility, meaningful connections, and access to opportunity can help local enterprise reach further.</p><a class="public-text-link" href="#marketplace">Discover the network ↗</a></div></div></section>
+          <section class="public-pillars" id="siteWork"><div class="public-section-label">HOW WE CONNECT <span>02 / OUR FOCUS</span></div><div class="public-pillar-grid"><article class="public-pillar pillar-olive"><span class="pillar-number">01</span><div class="pillar-icon">⌂</div><h3>Discover businesses</h3><p>Explore business profiles, products, and services in one accessible place.</p><span class="pillar-arrow">↗</span></article><article class="public-pillar pillar-sand"><span class="pillar-number">02</span><div class="pillar-icon">✳</div><h3>Build connections</h3><p>Help buyers, suppliers, professionals, and entrepreneurs find new opportunities.</p><span class="pillar-arrow">↗</span></article><article class="public-pillar pillar-lilac"><span class="pillar-number">03</span><div class="pillar-icon">↗</div><h3>Grow together</h3><p>Make your business easier to discover and strengthen the wider community.</p><span class="pillar-arrow">↗</span></article></div></section>
+          <section class="public-audience"><div><span class="public-eyebrow dark-eyebrow">ONE NETWORK, PURPOSE-BUILT ACCESS</span><h2>Your place in the network.</h2><p>Choose the right space for your needs. Each account has its own access and permissions.</p></div><div class="public-audience-actions"><button type="button" data-public-action="join"><span>↗</span><strong>Customer</strong><small>Discover and connect</small></button><button type="button" data-public-action="business"><span>▦</span><strong>Business / Shopkeeper</strong><small>Showcase your business</small></button><button type="button" data-public-action="admin"><span>⌑</span><strong>Sansthan team</strong><small>Secure administration</small></button></div></section>
+        </section>
         <div class="welcome-row">
           <div>
             <div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="network">YOUR NETWORK. YOUR GROWTH.</span></div>
@@ -78,7 +86,7 @@
           <article class="stat-card stat-cta"><div class="stat-top"><span class="stat-icon cream">↗</span><span class="stat-caption">YOUR NEXT STEP</span></div><strong>Start here.</strong><span class="stat-label">Introduce your business</span><button id="statCta" class="text-link">Create a listing <span>→</span></button></article>
         </section>
 
-        <section class="market-section">
+        <section class="market-section" id="marketplace">
           <div class="section-heading">
             <div><div class="eyebrow"><span class="eyebrow-line"></span>THE MARKETPLACE</div><h2 id="listingHeading">Explore opportunities</h2><p>Browse products, bulk suppliers, and professional services.</p></div>
             <button class="button button-outline" id="viewAllButton">View all <span>→</span></button>
@@ -102,7 +110,7 @@
         <section class="bottom-banner">
           <div class="banner-icon">✦</div><div><h3>Your skills deserve to be seen.</h3><p>Join the network and connect with customers, partners, and suppliers.</p></div><button class="button button-light" id="bannerJoin">Join ABN <span>→</span></button>
         </section>
-        <footer class="page-footer"><span>Ambedkarite Business Network · An initiative of Bahujan Samaj Vikas Sansthan <small class="abn-build-tag">Web v2026.10.25.7</small></span><span><a href="#" id="privacyLink">Privacy-first by design</a> · <a href="#" id="aboutLink">About ABN</a></span></footer>
+        <footer class="page-footer"><span>Ambedkarite Business Network · An initiative of Bahujan Samaj Vikas Sansthan <small class="abn-build-tag">Public website · v2026.10.25.9</small></span><span><a href="#" id="privacyLink">Privacy-first by design</a> · <a href="#" id="aboutLink">About ABN</a></span></footer>
       </section>
     </main>
   </div>
@@ -114,10 +122,10 @@
       <div id="modalContent"></div>
     </section>
   </div>
-  <script type="module" src="./app.js?v=20261025-8"></script>
-  <script type="module" src="./portals.js?v=20261025-8"></script>
+  <script type="module" src="./app.js?v=20261025-9"></script>
+  <script type="module" src="./portals.js?v=20261025-9"></script>
   
-  <script src="./marketplace-plus.js?v=20261025-8"></script>
-  <script src="./app-branding.js?v=20261025-8"></script>
+  <script src="./marketplace-plus.js?v=20261025-9"></script>
+  <script src="./public-site.js?v=20261025-9"></script>
 </body>
 </html>
