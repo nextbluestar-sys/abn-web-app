@@ -83,7 +83,7 @@ async function renderAuthorityPanel(overlay, user) {
       ` : ""}`;
     list.append(card);
     const docs = card.querySelector(".abn-v-docs");
-    const paths = Array.isArray(r.document_paths) ? r.document_paths : [];
+    const paths = Array.isArray(r.private_document_paths) ? r.private_document_paths : [];
     if (!paths.length) {
       docs.innerHTML = '<p class="abn-v-muted">No documents were attached to this request.</p>';
     } else {
@@ -149,7 +149,8 @@ async function renderPanel(overlay) {
     db.rpc("get_my_abn_verification_requests")
   ]);
   if (bizError) { body.innerHTML = '<p class="abn-v-muted">Could not load your businesses. Please refresh and try again.</p>'; return; }
-  const requestList = reqError ? [] : (requests || []);
+  if (reqError) console.error("Verification request history error:", reqError);
+  const requestList = requests || [];
   const statusText = s => s === "in_review" ? "In review" : (s || "pending");
   const requestCards = requestList.length ? requestList.map(r => `
     <article class="abn-v-card">
@@ -173,7 +174,7 @@ async function renderPanel(overlay) {
         <div class="abn-v-actions"><button class="button button-primary" id="abnVSubmit" type="submit">Submit for verification</button></div>
       </form>` : '<p class="abn-v-muted">You have no business profile yet. Create one with “List your business”, then return here to request verification.</p>'}
     </div>
-    <div class="abn-v-card"><h3>Your verification requests</h3><div class="abn-v-list">${requestCards}</div></div>`;
+    <div class="abn-v-card"><h3>Your verification requests</h3>${reqError ? `<p class="abn-v-muted">Could not load request history: ${esc(reqError.message)}. Your business list is still available; refresh or contact the ABN administrator if this continues.</p>` : ""}<div class="abn-v-list">${requestCards}</div></div>`;
   const form = body.querySelector("#abnVForm");
   if (!form) return;
   form.onsubmit = async e => {
