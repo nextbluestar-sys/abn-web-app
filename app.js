@@ -11,6 +11,15 @@ let activeFilter = "all";
 let currentView = "discover";
 let language = localStorage.getItem("abn-language") || "en";
 let toastTimer;
+let nearbyOrigin=null;
+let selectedBusinessPoint=null;
+const INDIA_STATES=["Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"];
+const stateOptions=(id)=>`<select id="${"${id}"}"><option value="">Select state / UT</option>${"${INDIA_STATES.map(s=>`<option>${"${s}"}</option>`).join("")}"}</select>`;
+function distanceKm(a,b){const rad=n=>n*Math.PI/180,dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon),x=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
+function requestGPS(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error("Location is not supported by this browser."));navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),()=>reject(new Error("Location permission was denied. You can search by state or city instead.")),{enableHighAccuracy:true,timeout:12000,maximumAge:60000})})}
+async function uploadBusinessImage(file){if(!file)return null;if(!/^image\\/(jpeg|png|webp)$/.test(file.type))throw new Error("Choose a JPG, PNG or WebP image.");if(file.size>5*1024*1024)throw new Error("Image must be smaller than 5 MB.");const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";const path=`${"${currentUser.id}"}/${"${crypto.randomUUID()}"}.${"${ext}"}`;const {error}=await supabase.storage.from("abn-business-images").upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;return supabase.storage.from("abn-business-images").getPublicUrl(path).data.publicUrl}
+function setupBusinessMap(){const mapEl=$("#bizMap");if(!mapEl)return;const status=$("#bizMapStatus");const link=document.createElement("link");link.rel="stylesheet";link.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.append(link);import("https://esm.sh/leaflet@1.9.4").then(({default:L})=>{const map=L.map(mapEl).setView([22.9734,78.6569],5);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);let marker=null;const pin=(lat,lon)=>{selectedBusinessPoint={lat,lon};if(marker)marker.setLatLng([lat,lon]);else marker=L.marker([lat,lon],{draggable:true}).addTo(map);marker.on("dragend",()=>{const p=marker.getLatLng();selectedBusinessPoint={lat:p.lat,lon:p.lng};status.textContent=`Pinned: ${"${p.lat.toFixed(5)}"}, ${"${p.lng.toFixed(5)}"}`});status.textContent=`Pinned: ${"${lat.toFixed(5)}"}, ${"${lon.toFixed(5)}"}`};map.on("click",e=>pin(e.latlng.lat,e.latlng.lng));$("#bizUseGPS").onclick=async()=>{try{const p=await requestGPS();map.setView([p.lat,p.lon],15);pin(p.lat,p.lon)}catch(e){toast(e.message)}};window.setTimeout(()=>map.invalidateSize(),150)}).catch(()=>{status.textContent="Map could not load. You can still enter your address manually."})}
+function enableNearby(){requestGPS().then(p=>{nearbyOrigin=p;applyFilters();toast("Showing listings with locations nearest to you.")}).catch(e=>toast(e.message))}
 
 const words = {
   en: {discover:"Discover",businesses:"Businesses",services:"Services",enquiries:"My enquiries",account:"Account",network:"YOUR NETWORK. YOUR GROWTH.",heroLead:"Discover suppliers, shop from businesses, and find trusted professionals across India.",addBusiness:"List your business",signIn:"Sign in",signOut:"Sign out"},
@@ -58,7 +67,7 @@ function listingCard(item,index){
   const city=[business.city||item.city,business.state||item.state].filter(Boolean).join(", ");
   const price=item.price==null?"Ask for quote":money(item.price)+(item.unit?` <small>/ ${escapeHtml(item.unit)}</small>`:"");
   return `<article class="listing-card">
-    <div class="listing-visual ${tone}"><span class="listing-type">${service?"SERVICE":(wholesale?"B2B · WHOLESALE":"PRODUCT · B2C")}</span><span class="verified-pill">ABN listing</span><div class="visual-symbol">${symbol}</div></div>
+    <div class="listing-visual ${tone}">${business.cover_image_url?`<img class="listing-cover" src="${"${escapeHtml(business.cover_image_url)}"}" alt="${"${escapeHtml(business.name||"Business")}"} image" loading="lazy">`:""}<span class="listing-type">${service?"SERVICE":(wholesale?"B2B · WHOLESALE":"PRODUCT · B2C")}</span><span class="verified-pill">ABN listing</span><div class="visual-symbol">${symbol}</div></div>
     <div class="listing-body"><div class="listing-meta"><span class="listing-category">${escapeHtml(item.category||"General")}</span><span>${escapeHtml(city||"India")}</span></div>
     <h3>${escapeHtml(item.title)}</h3><p class="listing-desc">${escapeHtml(item.description||"Connect with this business for details, availability, and quotations.")}</p>
     <div class="listing-business"><span class="business-avatar">${escapeHtml((business.name||"A").slice(0,1).toUpperCase())}</span><span>${escapeHtml(business.name||"ABN business")}</span><span>✓</span></div>
@@ -79,6 +88,7 @@ function renderListings(items){
 function applyFilters(){
   const q=$("#searchInput").value.trim().toLowerCase();
   let items=[...allListings];
+  if(nearbyOrigin)items=items.filter(x=>Number.isFinite(Number(x.abn_businesses?.latitude))&&Number.isFinite(Number(x.abn_businesses?.longitude))&&distanceKm(nearbyOrigin,{lat:Number(x.abn_businesses.latitude),lon:Number(x.abn_businesses.longitude)})<=50).sort((a,b)=>distanceKm(nearbyOrigin,{lat:Number(a.abn_businesses.latitude),lon:Number(a.abn_businesses.longitude)})-distanceKm(nearbyOrigin,{lat:Number(b.abn_businesses.latitude),lon:Number(b.abn_businesses.longitude)}));
   if(activeFilter==="product")items=items.filter(x=>x.listing_type==="product");
   if(activeFilter==="service")items=items.filter(x=>x.listing_type==="service");
   if(activeFilter==="b2b")items=items.filter(x=>/wholesale|bulk|supplier|b2b/i.test(`${x.category} ${x.title} ${x.description}`));
@@ -87,7 +97,7 @@ function applyFilters(){
 }
 async function loadListings(){
   $("#listingGrid").innerHTML='<div class="loading-card"><span class="spinner"></span> Loading marketplace listings…</div>';
-  const {data,error}=await supabase.from("abn_listings").select("id,business_id,created_by,listing_type,title,description,category,price,unit,city,state,status,abn_businesses!inner(name,city,state,phone,is_active)").eq("status","published").eq("abn_businesses.is_active",true).order("created_at",{ascending:false}).limit(60);
+  const {data,error}=await supabase.from("abn_listings").select("id,business_id,created_by,listing_type,title,description,category,price,unit,city,state,status,abn_businesses!inner(name,city,state,phone,is_active,latitude,longitude,cover_image_url,address_line,pincode)").eq("status","published").eq("abn_businesses.is_active",true).order("created_at",{ascending:false}).limit(60);
   if(error){console.error(error);allListings=[];renderListings([]);$("#resultsLabel").textContent="Marketplace connection needs attention";toast("Could not load listings. Check the Supabase setup and table permissions.");return}
   allListings=data||[];applyFilters();
 }
