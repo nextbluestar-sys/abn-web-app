@@ -1,15 +1,15 @@
-const CACHE_NAME = "abn-shell-v3-20261025-5";
+const CACHE_NAME = "abn-shell-v3-20261025-6";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20261025-5",
-  "./app.js?v=20261025-5",
-  "./portals.js?v=20261025-5",
+  "./styles.css?v=20261025-6",
+  "./app.js?v=20261025-6",
+  "./portals.js?v=20261025-6",
   "./config.js",
-  "./marketplace-plus.js?v=20261025-5",
-  "./marketplace-plus.css?v=20261025-5",
-  "./app-branding.js?v=20261025-5",
-  "./app-branding.css?v=20261025-5",
+  "./marketplace-plus.js?v=20261025-6",
+  "./marketplace-plus.css?v=20261025-6",
+  "./app-branding.js?v=20261025-6",
+  "./app-branding.css?v=20261025-6",
   "./manifest.webmanifest"
 ];
 self.addEventListener("install", event => {
