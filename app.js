@@ -116,7 +116,7 @@ function authForm(mode="signin"){
     try{
       let result;
       if(signup){
-        result=await supabase.auth.signUp({email,password,options:{data:{display_name:String(f.get("displayName")).trim(),preferred_language:$("#signupLanguage").value,account_type:$("#accountType").value}}});
+        result=await supabase.auth.signUp({email,password,options:{emailRedirectTo:"https://nextbluestar-sys.github.io/abn-web-app/",data:{display_name:String(f.get("displayName")).trim(),preferred_language:$("#signupLanguage").value,account_type:$("#accountType").value}}});
         if(result.error)throw result.error;
         if(result.data.session){currentUser=result.data.user;await refreshProfile();closeModal();toast("Account created. Welcome to ABN!");}
         else{closeModal();toast("Account created. Check your email to confirm, then sign in.");}
