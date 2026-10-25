@@ -51,12 +51,97 @@ function openPanel() {
   overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
   renderPanel(overlay);
 }
+async function renderAuthorityPanel(overlay, user) {
+  const body = overlay.querySelector("#abnVBody");
+  overlay.querySelector("#abnVTitle").textContent = "Business verification authority";
+  const { data: queue, error } = await db.rpc("get_abn_verification_queue");
+  if (error) {
+    console.error("Verification queue error:", error);
+    body.innerHTML = '<div class="abn-v-card"><h3>Could not load the verification queue</h3><p class="abn-v-muted">Your account may not be authorised, or the queue service returned an error. Please refresh and try again.</p></div>';
+    return;
+  }
+  const items = queue || [];
+  if (!items.length) {
+    body.innerHTML = '<div class="abn-v-card"><h3>No verification requests</h3><p class="abn-v-muted">There are currently no requests in the queue.</p></div>';
+    return;
+  }
+  body.innerHTML = '<p class="abn-v-note">Review submitted business proof carefully. Documents are privately accessible to authorised reviewers only.</p><div id="abnVQueue" class="abn-v-list"></div>';
+  const list = body.querySelector("#abnVQueue");
+  for (const r of items) {
+    const card = document.createElement("article");
+    card.className = "abn-v-card";
+    const status = r.request_status || "pending";
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h3>${esc(r.business_name || "Business verification")}</h3><span class="abn-v-status ${esc(status)}">${esc(status.replace("_"," "))}</span></div>
+      <p class="abn-v-muted">Applicant: ${esc(r.applicant_name || "Not provided")} · ${esc(r.city || "")}${r.state ? ", " + esc(r.state) : ""}</p>
+      <p class="abn-v-muted">Proof type: ${esc(r.verification_type)} · Submitted: ${esc(r.submitted_at ? new Date(r.submitted_at).toLocaleString("en-IN") : "—")}</p>
+      <div class="abn-v-docs"><p class="abn-v-muted">Loading private documents…</p></div>
+      ${r.reviewer_notes ? `<p class="abn-v-muted"><strong>Previous note:</strong> ${esc(r.reviewer_notes)}</p>` : ""}
+      ${["pending","in_review"].includes(status) ? `
+        <div class="abn-v-field"><label for="note-${esc(r.request_id)}">Reviewer note (optional)</label><textarea id="note-${esc(r.request_id)}" rows="2" style="width:100%;padding:10px;border:1px solid #dfe7df;border-radius:9px"></textarea></div>
+        <div class="abn-v-actions"><button class="button button-primary" type="button" data-review="verified" data-id="${esc(r.request_id)}">Verify business</button><button class="abn-v-close" type="button" data-review="rejected" data-id="${esc(r.request_id)}">Reject request</button></div>
+      ` : ""}`;
+    list.append(card);
+    const docs = card.querySelector(".abn-v-docs");
+    const paths = Array.isArray(r.document_paths) ? r.document_paths : [];
+    if (!paths.length) {
+      docs.innerHTML = '<p class="abn-v-muted">No documents were attached to this request.</p>';
+    } else {
+      docs.innerHTML = "";
+      for (const path of paths) {
+        const { data, error: signedError } = await db.storage.from("abn-private-verification").createSignedUrl(path, 300);
+        const p = document.createElement("p");
+        p.className = "abn-v-muted";
+        if (signedError || !data?.signedUrl) {
+          p.textContent = "A document could not be opened. Check reviewer permissions.";
+        } else {
+          const a = document.createElement("a");
+          a.href = data.signedUrl;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = "Open private proof document (5-minute link)";
+          p.append(a);
+        }
+        docs.append(p);
+      }
+    }
+    card.querySelectorAll("[data-review]").forEach(button => {
+      button.addEventListener("click", async () => {
+        const decision = button.dataset.review;
+        const requestId = button.dataset.id;
+        const action = decision === "verified" ? "verify this business" : "reject this request";
+        if (!confirm("Are you sure you want to " + action + "?")) return;
+        const note = card.querySelector("#note-" + requestId)?.value || null;
+        card.querySelectorAll("button[data-review]").forEach(b => { b.disabled = true; });
+        const { error: reviewError } = await db.rpc("review_abn_verification_request", {
+          p_request_id: requestId,
+          p_decision: decision,
+          p_reviewer_notes: note
+        });
+        if (reviewError) {
+          console.error(reviewError);
+          showToast(reviewError.message || "Could not update the verification request.");
+          card.querySelectorAll("button[data-review]").forEach(b => { b.disabled = false; });
+          return;
+        }
+        showToast(decision === "verified" ? "Business verified successfully." : "Verification request rejected.");
+        await renderAuthorityPanel(overlay, user);
+      });
+    });
+  }
+}
+
 async function renderPanel(overlay) {
   const body = overlay.querySelector("#abnVBody");
   const { data: { user } } = await db.auth.getUser();
   if (!user) {
     body.innerHTML = '<div class="abn-v-card"><h3>Sign in to continue</h3><p class="abn-v-muted">Sign in to ABN first, then open Business verification again.</p><button class="button button-primary" id="abnVSignIn">Sign in</button></div>';
     body.querySelector("#abnVSignIn").onclick = () => { overlay.remove(); document.querySelector("#loginButton")?.click(); };
+    return;
+  }
+  const { data: isAuthority, error: authorityError } = await db.rpc("is_abn_verification_authority");
+  if (!authorityError && isAuthority === true) {
+    await renderAuthorityPanel(overlay, user);
     return;
   }
   const [{ data: businesses, error: bizError }, { data: requests, error: reqError }] = await Promise.all([
