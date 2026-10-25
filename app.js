@@ -163,14 +163,21 @@ function addBusinessForm(){
  <div class="field"><label for="bizPhone">Business phone</label><input id="bizPhone" type="tel" maxlength="20" placeholder="+91…"></div>
  <div class="field"><label for="bizEmail">Business email</label><input id="bizEmail" type="email" placeholder="business@example.com"></div>
  <div class="field"><label for="bizWebsite">Website</label><input id="bizWebsite" type="url" placeholder="https://…"></div>
- <div class="field"><label for="bizCity">City</label><input id="bizCity" maxlength="100" placeholder="City"></div>
- <div class="field"><label for="bizState">State</label><input id="bizState" maxlength="100" placeholder="State"></div>
+  <div class="field full"><label for="bizCover">Business / shop photo</label><input id="bizCover" type="file" accept="image/jpeg,image/png,image/webp"><small class="form-help">JPG, PNG or WebP · maximum 5 MB</small><img id="bizImagePreview" class="image-preview hidden" alt="Business photo preview"></div>
+  <div class="field full"><label for="bizAddress">Street / full address</label><input id="bizAddress" maxlength="240" placeholder="Shop, building, street, landmark"></div>
+  <div class="field"><label for="bizState">State / Union Territory</label>${stateOptions("bizState")}</div>
+  <div class="field"><label for="bizCity">City / District / Town</label><input id="bizCity" maxlength="100" placeholder="City or district"></div>
+  <div class="field"><label for="bizPincode">PIN code</label><input id="bizPincode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit PIN"></div>
+  <div class="field full"><label>Pin your business location</label><div class="map-toolbar"><button type="button" class="button button-outline" id="bizUseGPS">◎ Use current GPS</button><span id="bizMapStatus" class="form-help">Tap the map to set your location, or drag the pin.</span></div><div id="bizMap" class="business-location-map"></div></div>
  <div class="field full"><label for="bizDescription">About your business</label><textarea id="bizDescription" maxlength="3000" placeholder="What do you offer? Who do you serve?"></textarea></div>
  </div><p class="form-help">Avoid entering private identity documents or sensitive community information in public fields.</p><div class="form-actions"><button class="button button-primary" type="submit">Submit business</button><button class="button button-outline" type="button" id="cancelBiz">Cancel</button></div></form>`);
+  selectedBusinessPoint=null;
+  $("#bizCover").onchange=()=>{const file=$("#bizCover").files[0],preview=$("#bizImagePreview");if(file){preview.src=URL.createObjectURL(file);preview.classList.remove("hidden")}else preview.classList.add("hidden")};
+  setupBusinessMap();
  $("#cancelBiz").onclick=closeModal;
  $("#businessForm").onsubmit=async e=>{e.preventDefault();const btn=$('button[type=submit]',e.currentTarget);btn.disabled=true;btn.textContent="Submitting…";
- const name=$("#bizName").value.trim();const payload={owner_id:currentUser.id,name,slug:slugify(name)+"-"+Math.random().toString(36).slice(2,6),category:$("#bizCategory").value,phone:$("#bizPhone").value.trim()||null,business_email:$("#bizEmail").value.trim()||null,website:$("#bizWebsite").value.trim()||null,city:$("#bizCity").value.trim()||null,state:$("#bizState").value.trim()||null,description:$("#bizDescription").value.trim()};
- try{const {error}=await supabase.from("abn_businesses").insert(payload);if(error)throw error;closeModal();toast("Business profile created. You can add products and services now.");await loadListings()}catch(err){toast(err.message||"Could not save business.");btn.disabled=false;btn.textContent="Submit business"}
+  const name=$("#bizName").value.trim();
+  try{const cover_image_url=await uploadBusinessImage($("#bizCover").files[0]);const payload={owner_id:currentUser.id,name,slug:slugify(name)+"-"+Math.random().toString(36).slice(2,6),category:$("#bizCategory").value,phone:$("#bizPhone").value.trim()||null,business_email:$("#bizEmail").value.trim()||null,website:$("#bizWebsite").value.trim()||null,address_line:$("#bizAddress").value.trim()||null,city:$("#bizCity").value.trim()||null,state:$("#bizState").value||null,pincode:$("#bizPincode").value.trim()||null,latitude:selectedBusinessPoint?.lat??null,longitude:selectedBusinessPoint?.lon??null,cover_image_url,description:$("#bizDescription").value.trim()};const {error}=await supabase.from("abn_businesses").insert(payload);if(error)throw error;closeModal();toast("Business profile created with address and location.");await loadListings()}catch(err){toast(err.message||"Could not save business.");btn.disabled=false;btn.textContent="Submit business"}
  };
 }
 async function addListingForm(){
@@ -187,7 +194,7 @@ async function addListingForm(){
  <div class="field"><label for="listingPrice">Price (₹)</label><input id="listingPrice" type="number" min="0" step="0.01" placeholder="Leave blank for quote"></div>
  <div class="field"><label for="listingUnit">Unit</label><input id="listingUnit" maxlength="50" placeholder="piece, hour, kg…"></div>
  <div class="field"><label for="listingCity">City</label><input id="listingCity" maxlength="100"></div>
- <div class="field"><label for="listingState">State</label><input id="listingState" maxlength="100"></div>
+  <div class="field"><label for="listingState">State / UT</label>${stateOptions("listingState")}</div>
  <div class="field full"><label for="listingDescription">Description</label><textarea id="listingDescription" maxlength="5000" placeholder="Describe quality, availability, delivery, or service area."></textarea></div>
  </div><div class="form-actions"><button class="button button-primary" type="submit">Publish listing</button><button class="button button-outline" type="button" id="cancelListing">Cancel</button></div></form>`);
  $("#cancelListing").onclick=closeModal;
