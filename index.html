@@ -8,7 +8,7 @@
   <title>ABN — Ambedkarite Business Network</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23153b2d'/%3E%3Ctext x='50' y='64' font-size='42' font-family='Arial' text-anchor='middle' fill='white' font-weight='700'%3EABN%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./styles.css?v=20261025-3">
+  <link rel="stylesheet" href="./styles.css?v=20261025-4">
 </head>
 <body>
   <div class="app-shell">
@@ -90,7 +90,7 @@
               <button class="filter-tab" data-filter="service">Services</button>
               <button class="filter-tab" data-filter="b2b">B2B / Wholesale</button>
             </div>
-            <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search products, services, businesses…"><kbd>↵</kbd></label>
+            <div class="search-location-row"><label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search products, services, businesses…"><kbd>↵</kbd></label><button class="button button-outline" id="nearbyButton" type="button">◎ Search nearby</button></div>
           </div>
           <div class="results-meta"><span id="resultsLabel">Loading marketplace…</span><button class="clear-search" id="clearSearch">Clear filters</button></div>
           <div class="listing-grid" id="listingGrid">
@@ -114,9 +114,9 @@
       <div id="modalContent"></div>
     </section>
   </div>
-  <script type="module" src="./app.js?v=20261025-3"></script>
+  <script type="module" src="./app.js?v=20261025-4"></script>
   
-  <script src="./marketplace-plus.js?v=20261025-3"></script>
-  <script src="./app-branding.js?v=20261025-3"></script>
+  <script src="./marketplace-plus.js?v=20261025-4"></script>
+  <script src="./app-branding.js?v=20261025-4"></script>
 </body>
 </html>
