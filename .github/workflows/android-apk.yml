@@ -1,0 +1,62 @@
+name: Build ABN Marketplace Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/android-apk.yml'
+      - '*.html'
+      - '*.js'
+      - '*.css'
+      - '*.json'
+      - '*.webmanifest'
+      - 'package.json'
+      - 'capacitor.config.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Prepare web assets
+        run: |
+          mkdir -p www
+          cp *.html *.js *.css *.json *.webmanifest www/
+          cp -r supabase www/ 2>/dev/null || true
+
+      - name: Install Capacitor dependencies
+        run: npm install
+
+      - name: Generate Android project
+        run: npx cap add android
+
+      - name: Sync web app
+        run: npx cap sync android
+
+      - name: Build debug APK
+        run: cd android && ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ABN-Marketplace-Android-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
