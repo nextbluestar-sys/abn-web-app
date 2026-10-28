@@ -1,0 +1,4 @@
+# Copy to .dev.vars locally (never commit .dev.vars)
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+CLERK_SECRET_KEY="sk_test_replace_me"
+ALLOWED_ORIGINS="http://localhost:8080"
