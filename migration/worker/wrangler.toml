@@ -1,0 +1,10 @@
+name = "abn-managed-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-28"
+
+[vars]
+# Replace with exact deployed frontend origins before enabling CORS.
+ALLOWED_ORIGINS = "https://nextbluestar-sys.github.io"
+
+# Set secrets with `wrangler secret put DATABASE_URL` and
+# `wrangler secret put CLERK_SECRET_KEY`; never put secret values here.
