@@ -1,4 +1,4 @@
-name: Build ABN Marketplace Android APK
+name: Build ABN Marketplace Android APKs
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
       - '*.webmanifest'
       - 'package.json'
       - 'capacitor.config.json'
+      - 'supabase/**'
   workflow_dispatch:
 
 permissions:
@@ -19,7 +20,24 @@ permissions:
 
 jobs:
   build:
+    name: Build ${{ matrix.app_name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - role: customer
+            app_id: org.bsvs.abn.customer
+            app_name: ABN Customer
+            artifact_name: ABN-Customer-APK
+          - role: business
+            app_id: org.bsvs.abn.business
+            app_name: ABN Business
+            artifact_name: ABN-Business-APK
+          - role: staff
+            app_id: org.bsvs.abn.staff
+            app_name: ABN Staff
+            artifact_name: ABN-Staff-APK
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,11 +53,35 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Prepare web assets
+      - name: Prepare role-specific app
+        env:
+          APP_ROLE: ${{ matrix.role }}
+          APP_ID: ${{ matrix.app_id }}
+          APP_NAME: ${{ matrix.app_name }}
         run: |
           mkdir -p www
           cp *.html *.js *.css *.json *.webmanifest www/
           cp -r supabase www/ 2>/dev/null || true
+          node <<'NODE'
+          const fs = require('fs');
+          const p = 'capacitor.config.json';
+          const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
+          cfg.appId = process.env.APP_ID;
+          cfg.appName = process.env.APP_NAME;
+          fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + '\n');
+          NODE
+          python3 <<'PY'
+          from pathlib import Path
+          import os
+          p = Path('www/index.html')
+          html = p.read_text()
+          marker = '<script type="module" src="./app.js'
+          inject = '<script>window.ABN_APP_ROLE = "' + os.environ['APP_ROLE'] + '";</script>\n  <script type="module" src="./mobile-role.js"></script>\n  '
+          if marker not in html:
+              raise SystemExit('Could not find app.js script marker in index.html')
+          html = html.replace(marker, inject + marker, 1)
+          p.write_text(html)
+          PY
 
       - name: Install Capacitor dependencies
         run: npm install
@@ -47,7 +89,7 @@ jobs:
       - name: Generate Android project
         run: npx cap add android
 
-      - name: Sync web app
+      - name: Sync app assets
         run: npx cap sync android
 
       - name: Build debug APK
@@ -56,7 +98,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ABN-Marketplace-Android-debug
+          name: ${{ matrix.artifact_name }}
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
