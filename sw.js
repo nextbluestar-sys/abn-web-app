@@ -1,4 +1,4 @@
-const CACHE_NAME = "abn-shell-v3-20261025-9";
+const CACHE_NAME = "abn-shell-v4-20261028-1";
 const SHELL = [
   "./",
   "./index.html",
@@ -9,7 +9,9 @@ const SHELL = [
   "./marketplace-plus.js?v=20261025-9",
   "./marketplace-plus.css?v=20261025-9",
   "./public-site.js?v=20261025-9",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./mobile-role.js",
+  "./assets/abn-logo.svg"
 ];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).catch(error => {
