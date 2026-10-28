@@ -63,3 +63,22 @@ This is a working frontend foundation, not a complete production commerce system
 - `private.abn_verification_requests`
 
 No data has been copied from the existing Sanstha Seva project.
+
+
+## Android apps (three separate APKs)
+
+The GitHub Actions workflow `.github/workflows/android-apk.yml` builds three distinct debug APKs in parallel:
+
+- **ABN Customer** — marketplace discovery and customer enquiries.
+- **ABN Business** — business profile and listing tools.
+- **ABN Staff** — staff workspace with a verification-queue entry point. The verification UI checks `is_abn_verification_authority()` before showing the reviewer queue; installing the staff APK does not grant reviewer permissions.
+
+To build manually, open **Actions → Build ABN Marketplace Android APKs → Run workflow**. When the run succeeds, download each artifact separately: `ABN-Customer-APK`, `ABN-Business-APK`, and `ABN-Staff-APK`. Each artifact contains a debug APK and is retained by GitHub Actions for 14 days.
+
+### Important rollout notes
+
+- These are debug/test APKs, not signed production releases.
+- Staff verification decisions remain controlled by Supabase permissions. Assign reviewer authority only to approved staff accounts and test with both authorized and unauthorized accounts.
+- Staff-led client onboarding by invitation is **not implemented yet**. Do not create a client business using a staff account, because ownership could be assigned incorrectly. A secure server-side invitation/claim workflow is required before that feature can be enabled.
+- The apps share the configured Supabase project. Confirm that the project URL/key in `config.js` is the intended production project and that row-level security is enabled and tested before distribution.
+- The current role-specific APKs reuse the existing web frontend with role-specific navigation. Review the full customer, business-owner, and staff workflows on real Android devices before launch.
