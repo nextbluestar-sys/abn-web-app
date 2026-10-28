@@ -13,6 +13,7 @@ on:
       - 'package.json'
       - 'capacitor.config.json'
       - 'supabase/**'
+      - 'assets/**'
   workflow_dispatch:
 
 permissions:
