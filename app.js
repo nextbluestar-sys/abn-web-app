@@ -121,7 +121,7 @@ function memberLoginForm(){
 }
 function authForm(mode="signin"){
   const signup=mode==="signup";
-  showModal(signup?"Create your ABN account":"Sign in to ABN",`
+  showModal(signup?"Create your ABN account":"Business / Customer Login",`
     <form id="authForm">
       ${signup?`<div class="field"><label for="displayName">Full name</label><input id="displayName" name="displayName" autocomplete="name" required maxlength="120" placeholder="Your name"></div>`:""}
       <div class="field"><label for="authEmail">Email address</label><input id="authEmail" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
@@ -130,7 +130,7 @@ function authForm(mode="signin"){
       <p class="form-help">${signup?"By continuing, you agree to use ABN responsibly. Business and service listings can be published directly.":"If email confirmation is enabled, use the link sent to your inbox before signing in."}</p>
       <div class="form-actions"><button class="button button-primary" type="submit">${signup?"Create account":"Sign in"}</button><button class="button button-outline" type="button" id="cancelAuth">Cancel</button></div>
     </form>
-    <div class="modal-switch">${signup?"Already have an account?":"Member access is issued by BSVS staff."} <button type="button" id="switchAuth">${signup?"Sign in":"Create an account"}</button></div>`);
+    <div class="modal-switch">${signup?"Already have an account?":"Member access is issued by BSVS staff."} <button type="button" id="switchAuth">${signup?"Sign in":"Member ID login"}</button></div>`);
   $("#cancelAuth").onclick=closeModal;$("#switchAuth").onclick=()=>{if(signup)authForm("signin");else memberLoginForm()};
   $("#authForm").onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.currentTarget);const email=String(f.get("email")).trim();const password=String(f.get("password"));
