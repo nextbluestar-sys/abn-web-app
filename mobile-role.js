@@ -78,7 +78,6 @@ if (role === "staff") {
     }
   });
   home.querySelector("#abnStaffOnboarding").addEventListener("click", () => {
-    status.textContent = "Owner-led business registration is available now. Secure staff-led client invitations require a backend invitation workflow and must be enabled before staff create records on behalf of clients.";
-    document.querySelector("#addBusinessButton")?.click();
+    status.textContent = "Staff-led client onboarding is not enabled yet. To protect ownership records, do not create a client business under a staff account. The next step is a secure server-side invitation workflow that lets the client claim their own business profile.";
   });
 }
