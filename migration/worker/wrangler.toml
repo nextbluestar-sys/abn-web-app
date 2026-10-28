@@ -1,10 +1,12 @@
-name = "abn-managed-api"
+name = "abn-web-app"
 main = "src/index.ts"
 compatibility_date = "2026-10-28"
 
 [vars]
-# Replace with exact deployed frontend origins before enabling CORS.
+# Production frontend origin. Add any final custom domain only when configured.
 ALLOWED_ORIGINS = "https://nextbluestar-sys.github.io"
 
-# Set secrets with `wrangler secret put DATABASE_URL` and
-# `wrangler secret put CLERK_SECRET_KEY`; never put secret values here.
+# Configure secrets in the Cloudflare dashboard or with Wrangler:
+# npx wrangler secret put DATABASE_URL
+# npx wrangler secret put CLERK_SECRET_KEY
+# Never commit secret values to this file or Git.
