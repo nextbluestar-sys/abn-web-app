@@ -106,7 +106,7 @@ jobs:
           const root = 'android/app/src/main/res';
           const values = path.join(root, 'values', 'strings.xml');
           let xml = fs.readFileSync(values, 'utf8');
-          xml = xml.replace(/(<string name="app_name">)[^<]*(<\/string>)/, `$1${process.env.APP_NAME}$2`);
+          xml = xml.replace(/(<string name="(?:app_name|title_activity_main)">)[^<]*(<\/string>)/g, `$1${process.env.APP_NAME}$2`);
           fs.writeFileSync(values, xml);
           const svg = fs.readFileSync('assets/abn-logo.svg');
           const densities = { mdpi:48, hdpi:72, xhdpi:96, xxhdpi:144, xxxhdpi:192 };
