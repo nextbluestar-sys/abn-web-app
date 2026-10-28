@@ -1,5 +1,9 @@
 # Ambedkarite Business Network (ABN)
 
+## Managed-backend migration (in progress)
+
+A parallel fresh-start migration scaffold now lives in [`migration/`](migration/README.md), with a new PostgreSQL schema and a Cloudflare Worker API starter intended for Neon + Clerk. This does not change the live GitHub Pages app or retire Supabase. No provider credentials are committed and no production deployment has been performed. Follow the migration guide before provisioning services or switching traffic.
+
 Responsive PWA starter for the Ambedkarite Business Network, an initiative of Bahujan Samaj Vikas Sansthan (BSVS).
 
 ## Included
