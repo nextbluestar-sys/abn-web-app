@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b3478"/><stop offset="1" stop-color="#061e4c"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffdc35"/><stop offset="1" stop-color="#f7a900"/></linearGradient></defs>
+<rect width="512" height="512" rx="100" fill="white"/>
+<circle cx="256" cy="256" r="238" fill="url(#bg)" stroke="url(#gold)" stroke-width="12"/>
+<circle cx="342" cy="156" r="77" fill="#fff" opacity=".98"/>
+<g stroke="#0b3478" stroke-width="5" stroke-linecap="round">
+<path d="M342 88v136M274 156h136M294 108l96 96M390 108l-96 96M317 83l50 146M269 131l146 50M269 181l146-50M317 229l50-146"/>
+</g><circle cx="342" cy="156" r="12" fill="#0b3478"/>
+<path d="M76 278c18-71 63-102 109-102 43 0 68 30 68 66v43H76z" fill="#fff" opacity=".95"/>
+<circle cx="177" cy="133" r="52" fill="#f3c783" stroke="#0a285d" stroke-width="8"/>
+<path d="M125 126c3-44 31-67 61-63 30 3 44 26 42 52-14-10-24-19-34-35-14 20-37 33-69 37z" fill="#071a3e"/>
+<path d="M111 281h290l45 55H66z" fill="#061e4c"/>
+<g fill="url(#gold)"><rect x="332" y="245" width="22" height="39" rx="2"/><rect x="361" y="222" width="22" height="62" rx="2"/><rect x="390" y="196" width="22" height="88" rx="2"/></g>
+<path d="M270 278c39-9 86-37 130-78" fill="none" stroke="url(#gold)" stroke-width="14" stroke-linecap="round"/><path d="M386 193l34-7-8 34z" fill="#ffbd14"/>
+<text x="256" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="112" font-weight="900" letter-spacing="-8" fill="#fff">A<tspan fill="#ffbf12">B</tspan>N</text>
+<path d="M92 388h328" stroke="#ffbf12" stroke-width="5" stroke-linecap="round"/>
+<text x="256" y="421" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#fff">BUSINESS NETWORK</text>
+<text x="256" y="454" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="600" letter-spacing="3" fill="#ffcf25">CONNECT · COLLABORATE · GROW</text>
+</svg>
