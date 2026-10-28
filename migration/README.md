@@ -1,44 +1,81 @@
-# ABN managed-backend migration scaffold
+# ABN managed-backend migration
 
-This directory prepares a parallel, fresh-start backend for the Ambedkarite Business Network. It does **not** change the current GitHub Pages app or disable Supabase.
+This folder contains the parallel backend for the Ambedkarite Business Network. It is designed to leave the current public site untouched until the replacement is tested.
 
 ## Target architecture
 
-- **Frontend/source:** this GitHub repository; existing static site remains live during migration.
-- **API/hosting:** Cloudflare Workers (not deployed by this scaffold).
-- **Authentication:** Clerk; each account maps to an ABN role in the new database.
-- **Database:** a new managed Neon PostgreSQL database.
+- **Frontend:** existing static site at `https://nextbluestar-sys.github.io/abn-web-app/`
+- **API:** Cloudflare Worker named `abn-web-app` (matching the existing Worker)
+- **Authentication:** Clerk
+- **Database:** fresh Neon PostgreSQL database
 
-## Safety rules
+## Current implementation
 
-1. Never commit provider keys, database URLs, passwords, session tokens, or real member records.
-2. Keep Supabase and the current site running until the new backend passes the acceptance checklist.
-3. The new database starts empty. Re-enrol/invite users; do not bulk-copy records by default.
-4. A login identity is not authorization. API endpoints must load the account's role from the database and enforce permissions on the server.
-5. Never grant `admin` or `staff` based on a client-supplied role, email address, URL parameter, or browser storage.
-6. Create the first admin through a one-time, audited operator procedure after the services are configured. Do not ship a default admin.
-7. Use provider dashboards to add secrets directly. Never paste secrets into chat or source files.
+- `schema.sql` defines ABN accounts, businesses, business memberships, staff permissions, and audit logs.
+- `worker/src/index.ts` exposes `GET /health` and authenticated `GET /api/me`.
+- Clerk session tokens are verified server-side. Account details are fetched from Clerk's backend API.
+- A newly authenticated Clerk account is provisioned as an ordinary `member` only. Existing role and account status are preserved on later logins.
+- Business, staff, and admin roles must be assigned by an authorized operator in the database; client input can never grant them.
+- The Worker uses Neon through the serverless HTTP driver; database credentials are never sent to the browser.
 
-## Setup sequence
+## Required provider configuration
 
-1. Create a new Neon project and save its pooled connection string in a password manager.
-2. Create a Clerk application. Configure allowed origins/redirects for the eventual production domain and enable secure account recovery.
-3. Apply `schema.sql` to the **new** Neon database using its SQL editor.
-4. Create a Cloudflare Worker and configure secrets `DATABASE_URL`, `CLERK_SECRET_KEY`, and `CLERK_PUBLISHABLE_KEY` in the Cloudflare dashboard. The publishable key is not a secret, but keeping configuration together helps avoid accidental environment mismatch.
-5. Add Worker variables for allowed frontend origins; deploy only after setting and testing all values.
-6. Connect frontend authentication and API calls in a separate, reviewed change. Do not point the live app at the new backend before tests pass.
-7. Test each role with separate accounts, including attempts to call forbidden endpoints directly.
-8. Switch traffic only after sign-off; keep rollback instructions and the old service available through the agreed observation period.
+### 1. Neon
 
-## Roles
+1. Create/choose the **new** Neon database.
+2. Open the Neon SQL Editor and run all of `schema.sql` against that database.
+3. Copy the connection string from Neon. Rotate the password if it has ever been shared in chat, screenshots, or source control.
 
-- `member`: ordinary ABN member / customer.
-- `business`: business owner/member allowed to manage only explicitly linked business records.
-- `staff`: limited operational access; permissions should be granted per task.
-- `admin`: full ABN administration, reserved for explicitly provisioned operators.
+### 2. Clerk
 
-A person may have membership in a business, but that membership does not automatically grant staff or admin access.
+1. Use the Clerk application intended for ABN.
+2. Rotate any secret key previously shared outside the Clerk dashboard.
+3. Ensure the application is in the intended environment (test keys for testing; production keys only for production).
+4. Configure the production allowed origin/redirect URLs after the final frontend domain is chosen.
 
-## Current state
+### 3. Cloudflare Worker
 
-This is scaffolding only. No provider services have been provisioned, no credentials are configured, no data has been migrated, and no production deployment has been performed.
+The Wrangler config targets the existing Worker name `abn-web-app`. In Cloudflare Dashboard → Workers & Pages → `abn-web-app` → Settings → Variables and Secrets, set the **Production** environment:
+
+- Secret `DATABASE_URL`: the rotated Neon connection string.
+- Secret `CLERK_SECRET_KEY`: the rotated Clerk secret key.
+- Plain text variable `ALLOWED_ORIGINS`: `https://nextbluestar-sys.github.io` (already declared in `wrangler.toml`; keep the value consistent).
+
+Do not add secrets to source files, frontend JavaScript, chat messages, or GitHub commits. The Clerk publishable key is intended for frontend use; this Worker API does not need it.
+
+### 4. Deploy the Worker
+
+From `migration/worker`, install dependencies and run checks, then deploy:
+
+```sh
+npm install
+npm run typecheck
+npx wrangler deploy
+```
+
+Deployment must use an authorized Cloudflare session/API token. If using GitHub Actions, configure a least-privilege `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository Actions secrets before adding an automated deployment workflow. Do not place either value in the repository.
+
+### 5. Smoke test
+
+After a successful deployment, test:
+
+- `GET https://abn-web-app.<your-account-subdomain>.workers.dev/health` returns `{ "ok": true, "service": "abn-managed-api" }`.
+- `GET /api/me` without a bearer token returns HTTP 401.
+- `GET /api/me` with a valid Clerk session token creates a member record on first sign-in and returns the account.
+- Suspended/invited accounts are denied. Client requests cannot elevate role.
+- Browser requests from the configured frontend origin pass CORS; other origins do not receive an allow-origin header.
+
+Do not point the live frontend at this API until these checks pass. The current site remains available for rollback.
+
+## Authorization model
+
+- `member`: ordinary ABN member/customer.
+- `business`: access to explicitly linked business records only.
+- `staff`: operational access granted per permission.
+- `admin`: full ABN administration, only through explicit operator provisioning.
+
+Never grant elevated roles based on an email address, client-supplied role, URL parameter, or browser storage.
+
+## Important limitations
+
+This repository change prepares the Worker source and configuration; it does not itself log in to provider dashboards, execute SQL in your Neon project, set Cloudflare secrets, or deploy to your Cloudflare account. Those provider-side operations must be confirmed independently before the backend is considered live. The existing public app and its current backend are not switched or disabled by these files.
