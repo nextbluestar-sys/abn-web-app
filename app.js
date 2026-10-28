@@ -114,6 +114,11 @@ async function refreshProfile(){
   if(currentUser){const {data}=await supabase.from("abn_profiles").select("*").eq("id",currentUser.id).maybeSingle();currentProfile=data||null}
   updateAuthUI();
 }
+function memberLoginForm(){
+ showModal("BSVS Member Login",`<p class="form-help">Use the member ID and password issued on your BSVS joining letter. Business accounts use the separate Business Login.</p><form id="memberLoginForm"><div class="field"><label for="memberLoginId">Member ID</label><input id="memberLoginId" required autocomplete="username" placeholder="BSVS-2026-000001-01"></div><div class="field"><label for="memberLoginPassword">Password</label><input id="memberLoginPassword" type="password" required autocomplete="current-password"></div><div class="form-actions"><button class="button button-primary" type="submit">Member sign in</button><button class="button button-outline" type="button" id="cancelMemberLogin">Cancel</button></div></form><div class="modal-switch">Business account? <button type="button" id="businessLoginSwitch">Business Login</button></div>`);
+ $("#cancelMemberLogin").onclick=closeModal;$("#businessLoginSwitch").onclick=()=>authForm("signin");
+ $("#memberLoginForm").onsubmit=async e=>{e.preventDefault();const id=$("#memberLoginId").value.trim().toUpperCase(),password=$("#memberLoginPassword").value;const btn=$('button[type=submit]',e.currentTarget);btn.disabled=true;btn.textContent="Signing in…";try{const result=await supabase.auth.signInWithPassword({email:id.toLowerCase()+"@members.abn.in",password});if(result.error)throw result.error;currentUser=result.data.user;await refreshProfile();closeModal();toast("Welcome to ABN Member access.");await loadListings()}catch(err){toast("Member ID or password is incorrect, or the account is not activated.");btn.disabled=false;btn.textContent="Member sign in"}};
+}
 function authForm(mode="signin"){
   const signup=mode==="signup";
   showModal(signup?"Create your ABN account":"Sign in to ABN",`
@@ -125,24 +130,8 @@ function authForm(mode="signin"){
       <p class="form-help">${signup?"By continuing, you agree to use ABN responsibly. Business and service listings can be published directly.":"If email confirmation is enabled, use the link sent to your inbox before signing in."}</p>
       <div class="form-actions"><button class="button button-primary" type="submit">${signup?"Create account":"Sign in"}</button><button class="button button-outline" type="button" id="cancelAuth">Cancel</button></div>
     </form>
-    <div class="modal-switch">${signup?"Already have an account?":"New to ABN?"} <button type="button" id="switchAuth">${signup?"Sign in":"Create an account"}</button></div>`);
-  $("#cancelAuth").onclick=closeModal;$("#switchAuth").onclick=()=>authForm(signup?"signin":"signup");
-  const googleButton=document.createElement("button");
-  googleButton.type="button";
-  googleButton.className="button button-outline";
-  googleButton.style.width="100%";
-  googleButton.style.marginTop="12px";
-  googleButton.innerHTML='<span aria-hidden="true" style="font-weight:700;margin-right:8px">G</span> Continue with Google';
-  $("#authForm").insertAdjacentElement("afterend",googleButton);
-  googleButton.addEventListener("click",async()=>{
-    googleButton.disabled=true;
-    googleButton.textContent="Connecting to Google…";
-    const {error}=await supabase.auth.signInWithOAuth({
-      provider:"google",
-      options:{redirectTo:"https://nextbluestar-sys.github.io/abn-web-app/"}
-    });
-    if(error){toast(error.message||"Google sign-in could not start.");googleButton.disabled=false;googleButton.textContent="Continue with Google";}
-  });
+    <div class="modal-switch">${signup?"Already have an account?":"Member access is issued by BSVS staff."} <button type="button" id="switchAuth">${signup?"Sign in":"Create an account"}</button></div>`);
+  $("#cancelAuth").onclick=closeModal;$("#switchAuth").onclick=()=>{if(signup)authForm("signin");else memberLoginForm()};
   $("#authForm").onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.currentTarget);const email=String(f.get("email")).trim();const password=String(f.get("password"));
     const submit=$("button[type=submit]",e.currentTarget);submit.disabled=true;submit.textContent=signup?"Creating…":"Signing in…";
@@ -251,7 +240,7 @@ function wireUI(){
  $("#accountNav").onclick=showAccount;$("#avatarButton").onclick=showAccount;
  $("#loginButton").onclick=async()=>{if(currentUser){await supabase.auth.signOut();currentUser=null;currentProfile=null;updateAuthUI();toast("Signed out.");}else authForm("signin")};
  $("#addBusinessButton").onclick=addBusinessForm;$("#emptyAddBusiness").onclick=addBusinessForm;$("#statCta").onclick=addListingForm;
- $("#bannerJoin").onclick=()=>currentUser?addBusinessForm():authForm("signup");
+ $("#bannerJoin").onclick=()=>currentUser?addBusinessForm():authForm("signin");
  $("#exploreButton").onclick=()=>$("#listingHeading").scrollIntoView({behavior:"smooth",block:"start"});
  $("#viewAllButton").onclick=()=>{activeFilter="all";$$(".filter-tab").forEach(b=>b.classList.toggle("active",b.dataset.filter==="all"));$("#searchInput").value="";applyFilters()};
  $("#clearSearch").onclick=()=>{$("#searchInput").value="";activeFilter="all";$$(".filter-tab").forEach(b=>b.classList.toggle("active",b.dataset.filter==="all"));applyFilters()};
